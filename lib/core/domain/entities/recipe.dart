@@ -6,11 +6,19 @@ import 'model.dart';
 class Recipe extends Model {
   var name = "";
   var description = "";
-  var ingredients = <Ingredient>[];
-  var steps = <Step>[];
+  var calsPerServing = 0;
+  var proteinPerServing = 0;
+  var servings = 0;
+  final List<Ingredient> ingredients;
+  final List<Step> steps;
 
-  Recipe({String id, this.name, this.description, this.ingredients, this.steps})
-      : super(id: id);
+  Recipe({
+    String id,
+    this.name,
+    this.description,
+    this.ingredients = const [],
+    this.steps = const [],
+  }) : super(id: id);
 
   factory Recipe.fromJSON(Map<String, dynamic> json) => Recipe(
         id: json["id"],
