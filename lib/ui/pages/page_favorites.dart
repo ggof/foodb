@@ -49,7 +49,8 @@ class PageFavorites extends StatelessWidget {
                       border: InputBorder.none,
                     ),
                   ),
-                )),
+                ),
+            ),
             SliverList(
               delegate: SliverChildListDelegate(
                 [

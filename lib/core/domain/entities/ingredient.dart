@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'model.dart';
 
 abstract class Error {
@@ -15,6 +13,7 @@ class Unit {
   final String name;
   Unit._(this.name);
 
+  factory Unit.unit() => Unit._("");
   factory Unit.grams() => Unit._("grams");
   factory Unit.kilos() => Unit._("kilos");
   factory Unit.cups() => Unit._("cups");
@@ -23,6 +22,7 @@ class Unit {
 
   factory Unit.fromJSON(String unit) {
     switch (unit) {
+      case "unit":
       case "grams":
       case "kilos":
       case "teaspoons":

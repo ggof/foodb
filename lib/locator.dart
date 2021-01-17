@@ -1,4 +1,5 @@
 import 'package:foodb/ui/vm/vm_favorites.dart';
+import 'package:foodb/ui/vm/vm_recipe.dart';
 import 'package:get_it/get_it.dart';
 
 final locator = GetIt.I;
@@ -9,4 +10,5 @@ void initLocator() {
 
 void _setupBlocs(GetIt locator) {
   locator.registerFactory(() => VMFavorites());
+  locator.registerFactory(() => VMRecipe());
 }
