@@ -18,7 +18,7 @@ class PageRecipe extends StatelessWidget {
             slivers: [
               SliverPersistentHeader(
                 pinned: true,
-                delegate: _Header(),
+                delegate: _Header(id: id),
               ),
               SliverList(
                 delegate: SliverChildListDelegate(
@@ -67,6 +67,25 @@ class PageRecipe extends StatelessWidget {
                             VerticalSpacer(64),
                             Text('Ingredients',
                                 style: Theme.of(context).textTheme.headline2),
+                            VerticalSpacer(16),
+                            Divider(color: Colors.grey.shade400),
+                            ...bloc.ingredients.value.map(
+                              (i) => Column(
+                                children: [
+                                  VerticalSpacer(8),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(i.name),
+                                      Text("${i.quantity} ${i.unit.name}"),
+                                    ],
+                                  ),
+                                  VerticalSpacer(8),
+                                  Divider(color: Colors.grey.shade400)
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -81,7 +100,9 @@ class PageRecipe extends StatelessWidget {
 }
 
 class _Header extends SliverPersistentHeaderDelegate {
-  _Header() : super();
+  final String id;
+
+  _Header({this.id}) : super();
 
   @override
   Widget build(
@@ -94,10 +115,13 @@ class _Header extends SliverPersistentHeaderDelegate {
             height: 256,
             left: 0,
             right: 0,
-            child: Container(
-              padding: EdgeInsets.only(top: 32),
-              color: Theme.of(context).accentColor,
-              child: Image.asset("images/food.png", fit: BoxFit.contain),
+            child: Hero(
+              tag: id,
+              child: Container(
+                padding: EdgeInsets.only(top: 32),
+                color: Theme.of(context).accentColor,
+                child: Image.asset("images/food.png", fit: BoxFit.contain),
+              ),
             ),
           ),
           Positioned(

@@ -7,15 +7,15 @@ import 'package:foodb/ui/vm/vm_favorites.dart';
 
 final mock = <Recipe>[
   Recipe(
-    id: "mock",
+    id: "mock1",
     name: "Recipe 1",
   ),
   Recipe(
-    id: "mock",
+    id: "mock2",
     name: "Recipe 1",
   ),
   Recipe(
-    id: "mock",
+    id: "mock3",
     name: "Recipe 1",
   ),
 ];
@@ -29,27 +29,27 @@ class PageFavorites extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
             SliverAppBar(
-                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                title: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    shape: BoxShape.rectangle,
-                    color: Theme.of(context).accentColor,
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              title: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  shape: BoxShape.rectangle,
+                  color: Theme.of(context).accentColor,
+                ),
+                margin: const EdgeInsets.all(4),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: TextField(
+                  style: TextStyle(
+                    fontSize: 20,
                   ),
-                  margin: const EdgeInsets.all(4),
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: TextField(
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: "search something ...",
-                      focusColor: Color(0xFF101010),
-                      prefixIcon: Icon(Icons.search, color: Color(0xFFB8BFD4)),
-                      border: InputBorder.none,
-                    ),
+                  decoration: InputDecoration(
+                    hintText: "search something ...",
+                    focusColor: Color(0xFF101010),
+                    prefixIcon: Icon(Icons.search, color: Color(0xFFB8BFD4)),
+                    border: InputBorder.none,
                   ),
                 ),
+              ),
             ),
             SliverList(
               delegate: SliverChildListDelegate(
