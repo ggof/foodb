@@ -26,7 +26,7 @@ class TabbedPageState extends State<TabbedPage> {
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _tabIndex,
           showUnselectedLabels: false,
-          selectedItemColor: Color(0xFF101010),
+          // selectedItemColor: Color(0xFF101010),
           items: widget.items,
           onTap: onTap,
         ),

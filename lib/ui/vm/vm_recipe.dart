@@ -12,9 +12,8 @@ class VMRecipe extends VM {
   final ingredients = ValueNotifier(const <Ingredient>[]);
   final steps = ValueNotifier(const <Step>[]);
 
+  //TODO: add use case here
   void init(String id) {
-    //TODO: add use case here
-
     _id = id;
     name.value = "Protein apple pie pancakes";
     imageURL.value = "images/food.png";

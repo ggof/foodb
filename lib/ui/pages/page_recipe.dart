@@ -31,7 +31,7 @@ class PageRecipe extends StatelessWidget {
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 40),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Theme.of(context).dialogBackgroundColor,
                           borderRadius: BorderRadius.vertical(
                             top: Radius.circular(32),
                           ),

@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 
 abstract class VM {
   final state = ValueNotifier<ViewState>(Idle());
