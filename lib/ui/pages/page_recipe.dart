@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:flutter/material.dart' hide Step;
+import 'package:foodb/core/domain/entities/ingredient.dart';
+import 'package:foodb/core/domain/entities/step.dart';
 import 'package:foodb/ui/components/bloc_loader.dart';
 import 'package:foodb/ui/components/spacer.dart';
 import 'package:foodb/ui/vm/vm_recipe.dart';
@@ -69,21 +70,24 @@ class PageRecipe extends StatelessWidget {
                                 style: Theme.of(context).textTheme.headline2),
                             VerticalSpacer(16),
                             Divider(color: Colors.grey.shade400),
-                            ...bloc.ingredients.value.map(
-                              (i) => Column(
-                                children: [
-                                  VerticalSpacer(8),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(i.name),
-                                      Text("${i.quantity} ${i.unit.name}"),
-                                    ],
-                                  ),
-                                  VerticalSpacer(8),
-                                  Divider(color: Colors.grey.shade400)
-                                ],
+                            ValueListenableBuilder<List<Ingredient>>(
+                              valueListenable: bloc.ingredients,
+                              builder: (context, list, _) => Column(
+                                children: list
+                                    .map(toIngredientItem(context))
+                                    .toList(),
+                              ),
+                            ),
+                            VerticalSpacer(32),
+                            Text('Steps',
+                                style: Theme.of(context).textTheme.headline2),
+                            VerticalSpacer(16),
+                            Divider(color: Colors.grey.shade400),
+                            ValueListenableBuilder<List<Step>>(
+                              valueListenable: bloc.steps,
+                              builder: (context, list, _) => Column(
+                                children:
+                                    list.map(toStepItem(context)).toList(),
                               ),
                             ),
                           ],
@@ -96,6 +100,41 @@ class PageRecipe extends StatelessWidget {
             ],
           ),
         ),
+      );
+
+  Widget Function(Ingredient) toIngredientItem(BuildContext context) =>
+      (Ingredient i) => Column(
+            children: [
+              VerticalSpacer(8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    i.name,
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                  Text(
+                    "${i.quantity} ${i.unit.name}",
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                ],
+              ),
+              VerticalSpacer(8),
+              Divider(color: Colors.grey.shade400)
+            ],
+          );
+
+  Widget Function(Step) toStepItem(BuildContext context) => (Step i) => Column(
+        children: [
+          VerticalSpacer(8),
+          Text(
+            i.description,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyText1,
+          ),
+          VerticalSpacer(8),
+          Divider(color: Colors.grey.shade400)
+        ],
       );
 }
 
@@ -136,7 +175,6 @@ class _Header extends SliverPersistentHeaderDelegate {
                   icon: Icon(Icons.arrow_back_ios),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
-                Icon(Icons.favorite_outline),
               ],
             ),
           ),

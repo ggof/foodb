@@ -7,23 +7,27 @@ import 'package:foodb/ui/vm/vm_recipe.dart';
 class PageAddRecipe extends StatelessWidget {
   @override
   Widget build(BuildContext context) => VMLoader<VMRecipe>(
-        builder: (context, bloc) => CustomScrollView(
-          slivers: [
-            SliverPersistentHeader(delegate: _Header()),
-            SliverList(
-              delegate: SliverChildListDelegate([
-                TextBox(
-                  hintText: "Name",
-                ),
-                VerticalSpacer(8),
-                TextBox(hintText: "Description",),
-                VerticalSpacer(8),
-                TextBox(),
-                VerticalSpacer(8),
-                TextBox(),
-              ]),
-            ),
-          ],
+        builder: (context, bloc) => Scaffold(
+          body: CustomScrollView(
+            slivers: [
+              SliverPersistentHeader(delegate: _Header()),
+              SliverList(
+                delegate: SliverChildListDelegate([
+                  TextBox(
+                    hintText: "Name",
+                  ),
+                  VerticalSpacer(8),
+                  TextBox(
+                    hintText: "Description",
+                  ),
+                  VerticalSpacer(8),
+                  TextBox(),
+                  VerticalSpacer(8),
+                  TextBox(),
+                ]),
+              ),
+            ],
+          ),
         ),
       );
 }
@@ -43,7 +47,7 @@ class _Header extends SliverPersistentHeaderDelegate {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             IconButton(
-              onPressed: () {},
+              onPressed: () => goBack(context),
               icon: Icon(Icons.arrow_back_ios_rounded),
             ),
             IconButton(
@@ -60,4 +64,28 @@ class _Header extends SliverPersistentHeaderDelegate {
   @override
   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>
       false;
+
+  void goBack(BuildContext context) async {
+    final answer = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Are you sure?"),
+        content: Text("all progress will be lost."),
+        actions: [
+          MaterialButton(
+            child: Text("yes"),
+            onPressed: () => Navigator.of(context).pop(true),
+          ),
+          MaterialButton(
+            child: Text("No"),
+            onPressed: () => Navigator.of(context).pop(false),
+          ),
+        ],
+      ),
+    );
+
+    if (answer) {
+      Navigator.of(context).pop();
+    }
+  }
 }

@@ -5,12 +5,14 @@ class TextBox extends StatelessWidget {
   final Widget prefixIcon;
   final Widget suffixIcon;
   final String hintText;
+  final Function(String value) onChanged;
 
   TextBox({
     this.controller,
     this.prefixIcon,
     this.suffixIcon,
     this.hintText,
+    this.onChanged,
   });
 
   @override
@@ -26,6 +28,7 @@ class TextBox extends StatelessWidget {
           style: TextStyle(
             fontSize: 20,
           ),
+          onChanged: onChanged,
           decoration: InputDecoration(
             hintText: hintText,
             focusColor: Color(0xFF101010),

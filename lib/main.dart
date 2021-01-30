@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foodb/locator.dart';
 import 'package:foodb/router.dart';
-import 'package:foodb/ui/pages/page_main.dart';
 
 void main() {
   initLocator();
@@ -15,6 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
+        primaryColor: Color(0xFF6688FF),
         accentColor: Color(0xFFF4FAFC),
         scaffoldBackgroundColor: Color(0xFFFFFFFF),
         bottomNavigationBarTheme: BottomNavigationBarThemeData(selectedItemColor: Color(0xFF000000)),
@@ -42,8 +42,10 @@ class MyApp extends StatelessWidget {
         // the app on. For desktop platforms, the controls will be smaller and
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: Color(0xFF6688FF)),
       ),
       darkTheme: ThemeData(
+        primaryColor: Color(0xFF6688FF),
         accentColor: Color(0x40F4FAFC),
         scaffoldBackgroundColor: Color(0xff202020),
         dialogBackgroundColor: Color(0xFF202020),
@@ -74,13 +76,13 @@ class MyApp extends StatelessWidget {
             fontWeight: FontWeight.normal,
           ),
         ),
+        floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: Color(0xFF6688FF)),
         iconTheme: IconThemeData(color: Colors.white),
         // This makes the visual density adapt to the platform that you run
         // the app on. For desktop platforms, the controls will be smaller and
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: PageMain(),
       onGenerateRoute: onGenerateRoute,
     );
   }

@@ -35,4 +35,19 @@ class Recipe extends Model {
         "ingredients": ingredients.map((i) => i.toJSON()),
         "steps": steps.map((i) => i.toJSON()),
       };
+
+  Recipe copyWith({
+    String id,
+    String name,
+    String description,
+    List<Ingredient> ingredients,
+    List<Step> steps,
+  }) =>
+      Recipe(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        description: description ?? this.description,
+        ingredients: ingredients ?? this.ingredients,
+        steps: steps ?? this.steps,
+      );
 }
