@@ -5,6 +5,8 @@ class TextBox extends StatelessWidget {
   final Widget prefixIcon;
   final Widget suffixIcon;
   final String hintText;
+  final int lines;
+  final String Function(String) validator;
   final Function(String value) onChanged;
 
   TextBox({
@@ -12,6 +14,8 @@ class TextBox extends StatelessWidget {
     this.prefixIcon,
     this.suffixIcon,
     this.hintText,
+    this.lines = 1,
+    this.validator,
     this.onChanged,
   });
 
@@ -24,11 +28,16 @@ class TextBox extends StatelessWidget {
         ),
         margin: const EdgeInsets.all(4),
         padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: TextField(
+        child: TextFormField(
+          controller: controller,
           style: TextStyle(
             fontSize: 20,
           ),
           onChanged: onChanged,
+          validator: validator ?? this.noop,
+          maxLines: lines,
+          minLines:  lines,
+          textInputAction: TextInputAction.next,
           decoration: InputDecoration(
             hintText: hintText,
             focusColor: Color(0xFF101010),
@@ -37,4 +46,7 @@ class TextBox extends StatelessWidget {
           ),
         ),
       );
+
+  String noop(String _) => null;
 }
+

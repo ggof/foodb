@@ -1,64 +1,98 @@
 import 'package:flutter/foundation.dart';
 import 'package:foodb/core/domain/entities/ingredient.dart';
+import 'package:foodb/core/domain/entities/recipe.dart';
 import 'package:foodb/core/domain/entities/step.dart';
 import 'package:foodb/core/domain/repositories/recipe_repository.dart';
-import 'package:foodb/ui/helpers/value_list_notifier.dart';
+import 'package:foodb/ui/helpers/list_notifier.dart';
 import 'package:foodb/ui/vm/vm.dart';
+
+import '../../router.dart';
 
 class VMRecipe extends VM {
   String _id = "";
-  final imageURL = ValueNotifier("");
+
+  String get id => _id;
+  final image = ValueNotifier("");
   final name = ValueNotifier("");
   final description = ValueNotifier("");
-  final ingredients = ValueListNotifier(const <Ingredient>[]);
-  final steps = ValueNotifier(const <Step>[]);
+  final ingredients = ListNotifier(const <Ingredient>[]);
+  final steps = ListNotifier(const <Step>[]);
+  final errors = ListNotifier(const <String>[]);
+  final calories = ValueNotifier(0);
+  final proteins = ValueNotifier(0);
+  final servings = ValueNotifier(1);
 
   final IRecipeRepository repository;
 
   VMRecipe(this.repository);
 
-  //TODO: add use case here
   void init(String id) {
+    if (id == null) return;
+
     _id = id;
-    name.value = "Protein apple pie pancakes";
-    imageURL.value = "images/food.png";
-    description.value =
-        "Four ingredients, delicious, quick and easy! You can also add cinamon to taste, a touch of lemon juice and a dash of ground ginger for even tastier results.";
-    ingredients.value = [
-      Ingredient(
-        id: "1",
-        name: "Unsweetned apple sauce",
-        quantity: "120",
-        unit: Unit.grams(),
-      ),
-      Ingredient(
-        id: "2",
-        name: "Egg whites",
-        quantity: "1/3",
-        unit: Unit.cups(),
-      ),
-      Ingredient(
-        id: "3",
-        name: "Flour",
-        quantity: "40",
-        unit: Unit.grams(),
-      ),
-      Ingredient(
-        id: "4",
-        name: "Vanilla protein powder",
-        quantity: "30",
-        unit: Unit.grams(),
-      ),
-    ];
-    steps.value = [
-      Step(id: "1", description: "pour all the wet ingredients in a bowl. "),
-      Step(id: "2", description: "Mix thoroughly."),
-      Step(id: "3", description: "Add the dry ingredients. "),
-      Step(id: "4", description: "Mix thoroughly."),
-      Step(
-          id: "5",
-          description:
-              "cook in batches for about 2-3 minutes each side. I like mine 3 to 4 inches in diameter. "),
-    ];
+
+    repository.subscribeToRecipe(_id, onUpdate);
   }
+
+  void onUpdate(Recipe value) {
+    name.value = value.name;
+    description.value = value.description;
+    ingredients.value = value.ingredients;
+    calories.value = value.calories;
+    proteins.value = value.proteins;
+    servings.value = value.servings;
+    steps.value = value.steps;
+    image.value = value.image;
+
+    setIdle();
+  }
+
+  void setName(String value) => name.value = value;
+
+  void setDesc(String value) => description.value = value;
+
+  Future<void> submit() async {
+    final value = Recipe(
+      id: id,
+      name: name.value,
+      description: description.value,
+      image: image.value,
+      ingredients: ingredients.value,
+      steps: steps.value,
+      calories: calories.value,
+      proteins: proteins.value,
+      servings: servings.value,
+    );
+
+    final localErrors = <String>[];
+    if (value.name.isEmpty) {
+      localErrors.add("Name must not be empty");
+    }
+
+    if (value.ingredients.isEmpty || value.steps.isEmpty) {
+      localErrors.add("Ingredients and steps must not be empty");
+    }
+
+    if (localErrors.isNotEmpty) {
+      errors.value = localErrors;
+      return;
+    }
+
+    id == null
+        ? await repository.insert(value)
+        : await repository.update(value.copyWith(id: id));
+    navigate(NavigationEvent(routeRecipes));
+  }
+}
+
+class TextValue {
+  final String value;
+  final String error;
+
+  const TextValue({this.value, this.error});
+
+  TextValue copyWith({String value, String error}) => TextValue(
+        value: value ?? this.value,
+        error: error ?? this.error,
+      );
 }

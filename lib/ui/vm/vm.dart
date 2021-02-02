@@ -3,11 +3,9 @@ import 'package:flutter/foundation.dart';
 abstract class VM {
   final state = ValueNotifier<ViewState>(Idle());
   final navigation = ValueNotifier<NavigationEvent>(null);
-  final error = ValueNotifier<String>("");
 
   void setIdle() => state.value = Idle();
   void setBusy() => state.value = Busy();
-  void setError(String value) => error.value = value;
   void navigate(NavigationEvent value) => navigation.value = value;
 }
 

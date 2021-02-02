@@ -41,7 +41,7 @@ class CardRecipe extends StatelessWidget {
                     children: [
                       Icon(Icons.local_fire_department),
                       Text(
-                        recipe.calsPerServing.toString(),
+                        recipe.calories.toString(),
                         style: Theme.of(context).textTheme.headline2,
                       ),
                     ],

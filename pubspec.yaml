@@ -23,6 +23,7 @@ environment:
 dependencies:
   get_it:
   rxdart:
+  flutter_riverpod:
   flutter:
     sdk: flutter
 

@@ -20,18 +20,30 @@ class VMLoader<T extends VM> extends StatefulWidget {
 }
 
 class VMLoaderState<T extends VM> extends State<VMLoader<T>> {
-  final T bloc;
+  final T vm;
 
-  VMLoaderState() : bloc = locator();
+  VMLoaderState() : vm = locator();
 
   @override
   void initState() {
     super.initState();
     if (widget.onVMReady != null) {
-      widget.onVMReady(bloc);
+      widget.onVMReady(vm);
     }
   }
 
   @override
-  Widget build(BuildContext context) => widget.builder(context, bloc);
+  Widget build(BuildContext context) => ValueListenableBuilder<NavigationEvent>(
+        valueListenable: vm.navigation,
+        builder: (context, dest, child) {
+          if (dest != null) {
+            Future.microtask(
+              () => Navigator.of(context).pushNamed(dest.destination),
+            );
+          }
+
+          return child;
+        },
+        child: widget.builder(context, vm),
+      );
 }

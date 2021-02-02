@@ -2,6 +2,7 @@ import 'model.dart';
 
 abstract class Error {
   final String message;
+
   Error(this.message);
 }
 
@@ -11,13 +12,19 @@ class InvalidUnitError extends Error {
 
 class Unit {
   final String name;
+
   Unit._(this.name);
 
   factory Unit.unit() => Unit._("");
+
   factory Unit.grams() => Unit._("grams");
+
   factory Unit.kilos() => Unit._("kilos");
+
   factory Unit.cups() => Unit._("cups");
+
   factory Unit.tablespoons() => Unit._("tablespoons");
+
   factory Unit.teaspoons() => Unit._("teaspoons");
 
   factory Unit.fromJSON(String unit) {
@@ -41,6 +48,7 @@ class Ingredient extends Model {
   final String name;
   final String quantity;
   final Unit unit;
+
   Ingredient({
     String id,
     this.name,
@@ -61,4 +69,7 @@ class Ingredient extends Model {
         "quantity": quantity,
         "unit": unit.toJSON(),
       };
+
+  static bool isValid(Ingredient i) =>
+      i.name.isNotEmpty && i.quantity.isNotEmpty && i.unit.name.isNotEmpty;
 }

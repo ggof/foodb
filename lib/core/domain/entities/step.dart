@@ -14,4 +14,6 @@ class Step extends Model {
         "id": id,
         "description": description,
       };
+
+  static bool isValid(Step s) => s.description.isNotEmpty;
 }

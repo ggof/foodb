@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide Step;
 import 'package:foodb/core/domain/entities/ingredient.dart';
 import 'package:foodb/core/domain/entities/step.dart';
+import 'package:foodb/router.dart';
 import 'package:foodb/ui/components/bloc_loader.dart';
 import 'package:foodb/ui/components/spacer.dart';
 import 'package:foodb/ui/vm/vm_recipe.dart';
@@ -11,11 +12,11 @@ class PageRecipe extends StatelessWidget {
   const PageRecipe({Key key, this.id}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: null,
-        body: VMLoader<VMRecipe>(
-          onVMReady: (vm) => vm.init(id),
-          builder: (context, bloc) => CustomScrollView(
+  Widget build(BuildContext context) => VMLoader<VMRecipe>(
+        onVMReady: (vm) => vm.init(id),
+        builder: (context, vm) => Scaffold(
+          appBar: null,
+          body: CustomScrollView(
             slivers: [
               SliverPersistentHeader(
                 pinned: true,
@@ -41,7 +42,7 @@ class PageRecipe extends StatelessWidget {
                           children: [
                             VerticalSpacer(40),
                             ValueListenableBuilder<String>(
-                              valueListenable: bloc.name,
+                              valueListenable: vm.name,
                               builder: (context, value, _) => Text(value,
                                   style: Theme.of(context).textTheme.headline1),
                             ),
@@ -49,21 +50,31 @@ class PageRecipe extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  "Calories: 12",
-                                  style: Theme.of(context).textTheme.headline3,
+                                ValueListenableBuilder<int>(
+                                  valueListenable: vm.calories,
+                                  builder: (context, value, _) => Text(
+                                    "Calories: $value",
+                                    style:
+                                        Theme.of(context).textTheme.headline3,
+                                  ),
                                 ),
-                                Text(
-                                  "Protein: 40 grams",
-                                  style: Theme.of(context).textTheme.headline3,
+                                ValueListenableBuilder<int>(
+                                  valueListenable: vm.proteins,
+                                  builder:(context, value, _) => Text(
+                                    "Protein: $value grams" ,
+                                    style: Theme.of(context).textTheme.headline3,
+                                  ),
                                 ),
                               ],
                             ),
                             VerticalSpacer(16),
-                            Text(
-                              bloc.description.value,
-                              style: Theme.of(context).textTheme.bodyText1,
-                              textAlign: TextAlign.center,
+                            ValueListenableBuilder<String>(
+                              valueListenable: vm.description,
+                              builder:(context, value, _) => Text(
+                                value ?? "No description provided",
+                                style: Theme.of(context).textTheme.bodyText1,
+                                textAlign: TextAlign.center,
+                              ),
                             ),
                             VerticalSpacer(64),
                             Text('Ingredients',
@@ -71,7 +82,7 @@ class PageRecipe extends StatelessWidget {
                             VerticalSpacer(16),
                             Divider(color: Colors.grey.shade400),
                             ValueListenableBuilder<List<Ingredient>>(
-                              valueListenable: bloc.ingredients,
+                              valueListenable: vm.ingredients,
                               builder: (context, list, _) => Column(
                                 children: list
                                     .map(toIngredientItem(context))
@@ -84,7 +95,7 @@ class PageRecipe extends StatelessWidget {
                             VerticalSpacer(16),
                             Divider(color: Colors.grey.shade400),
                             ValueListenableBuilder<List<Step>>(
-                              valueListenable: bloc.steps,
+                              valueListenable: vm.steps,
                               builder: (context, list, _) => Column(
                                 children:
                                     list.map(toStepItem(context)).toList(),
@@ -93,7 +104,7 @@ class PageRecipe extends StatelessWidget {
                           ],
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -174,6 +185,10 @@ class _Header extends SliverPersistentHeaderDelegate {
                 IconButton(
                   icon: Icon(Icons.arrow_back_ios),
                   onPressed: () => Navigator.of(context).pop(),
+                ),
+                IconButton(
+                  icon: Icon(Icons.edit),
+                  onPressed: () => Navigator.of(context).pushNamed(routeRecipesAdd, arguments: {"id": id}),
                 ),
               ],
             ),
