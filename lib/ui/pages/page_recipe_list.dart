@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:foodb/core/domain/entities/recipe.dart';
-import 'package:foodb/ui/components/bloc_loader.dart';
+import 'package:foodb/core/entities/recipe.dart';
 import 'package:foodb/ui/components/card_recipe.dart';
 import 'package:foodb/ui/components/text_box.dart';
+import 'package:foodb/ui/components/vm_loader.dart';
 import 'package:foodb/ui/vm/vm_recipe_list.dart';
 
 class PageRecipeList extends StatelessWidget {
@@ -24,15 +24,17 @@ class PageRecipeList extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 8),
                 ),
                 SliverAppBar(
+                  automaticallyImplyLeading: false,
                   backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                   title: TextBox(
                     prefixIcon: Icon(Icons.search_rounded),
                     hintText: "Search something ...",
-                    onChanged: vm.filterBy,
+                    onChanged: vm.setFilter,
+                    showTitle: false,
                   ),
                 ),
-                ValueListenableBuilder<List<Recipe>>(
-                  valueListenable: vm.filtered,
+                ValueListenableBuilder<Iterable<Recipe>>(
+                  valueListenable: vm.list,
                   builder: (context, list, _) => SliverList(
                     delegate: SliverChildListDelegate(
                       list.map(toCard(context)).toList(),

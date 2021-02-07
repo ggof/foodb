@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:foodb/ui/components/bloc_loader.dart';
+import 'package:foodb/core/entities/ingredient.dart';
+import 'package:foodb/ui/components/ingredient_item.dart';
+import 'package:foodb/ui/components/notifiable_text_box.dart';
+import 'package:foodb/ui/components/vm_loader.dart';
 import 'package:foodb/ui/components/spacer.dart';
-import 'package:foodb/ui/components/text_box.dart';
 import 'package:foodb/ui/vm/vm_recipe.dart';
 
 class PageAddRecipe extends StatelessWidget {
@@ -19,64 +21,79 @@ class PageAddRecipe extends StatelessWidget {
           body: CustomScrollView(
             slivers: [
               SliverPersistentHeader(delegate: _Header(vm.submit)),
-              Form(
-                child: SliverList(
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                sliver: SliverList(
                   delegate: SliverChildListDelegate(
                     [
-                      ValueListenableBuilder<String>(
-                        valueListenable: vm.name,
-                        builder: (context, value, _) {
-                          final selection = TextSelection.collapsed(
-                              offset: value?.length ?? 0);
-                          nameController.value = TextEditingValue(
-                            text: value ?? "",
-                            selection: selection,
-                          );
-                          return TextBox(
-                            controller: nameController,
-                            hintText: "Name",
-                            onChanged: vm.setName,
-                            validator: (name) =>
-                                name.isEmpty ? "name must not be empty" : null,
-                          );
-                        },
+                      Text(
+                        "Details",
+                        style: Theme.of(context).textTheme.headline1,
+                      ),
+                      NotifiableTextBox(
+                        listenable: vm.name,
+                        onChanged: vm.setName,
+                        hintText: "Name",
                       ),
                       VerticalSpacer(8),
-                      ValueListenableBuilder<String>(
-                        valueListenable: vm.description,
-                        builder: (context, value, _) {
-                          final selection = TextSelection.collapsed(
-                              offset: value?.length ?? 0);
-                          descController.value = TextEditingValue(
-                            text: value ?? "",
-                            selection: selection,
-                          );
-
-                          return TextBox(
-                            lines: 8,
-                            controller: descController,
-                            onChanged: vm.setDesc,
-                            hintText: "Description",
-                          );
-                        },
+                      NotifiableTextBox(
+                        listenable: vm.description,
+                        onChanged: vm.setDesc,
+                        hintText: "Description",
+                        lines: 8,
                       ),
-                      ValueListenableBuilder<List<String>>(
-                        valueListenable: vm.errors,
-                        builder: (context, errors, _) => Column(
-                          children: [
-                            for (final e in errors)
-                              Text(
-                                e,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline3
-                                    .copyWith(
-                                      color: Color(0xFFFF0000),
-                                    ),
-                              ),
-                          ],
+                      VerticalSpacer(8),
+                      NotifiableTextBox(
+                        listenable: vm.calories,
+                        onChanged: vm.setCalories,
+                        hintText: "Calories",
+                        keyboardType: TextInputType.number,
+                      ),
+                      VerticalSpacer(8),
+                      NotifiableTextBox(
+                        listenable: vm.proteins,
+                        onChanged: vm.setProteins,
+                        hintText: "Proteins",
+                        keyboardType: TextInputType.number,
+                      ),
+                      VerticalSpacer(8),
+                      NotifiableTextBox(
+                        listenable: vm.servings,
+                        onChanged: vm.setServings,
+                        hintText: "Servings",
+                        keyboardType: TextInputType.number,
+                      ),
+                      VerticalSpacer(16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("Ingredients",
+                              style: Theme.of(context).textTheme.headline1),
+                          IconButton(
+                            icon: Icon(Icons.add),
+                            onPressed: () {},
+                          ),
+                        ],
+                      ),
+                      VerticalSpacer(8),
+                      for (final i in vm.ingredients.value)
+                        IngredientItem(
+                          ingredient: i,
+                          onSelected: print,
                         ),
-                      )
+                      VerticalSpacer(16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("Steps",
+                              style: Theme.of(context).textTheme.headline1),
+                          IconButton(
+                            icon: Icon(Icons.add),
+                            onPressed: () {},
+                          ),
+                        ],
+                      ),
+                      VerticalSpacer(8),
                     ],
                   ),
                 ),

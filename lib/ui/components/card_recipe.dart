@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:foodb/core/domain/entities/recipe.dart';
+import 'package:foodb/core/entities/recipe.dart';
 
 class CardRecipe extends StatelessWidget {
   final Recipe recipe;

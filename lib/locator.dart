@@ -1,4 +1,5 @@
-import 'package:foodb/core/domain/repositories/recipe_repository.dart';
+import 'package:foodb/core/entities/recipe.dart';
+import 'package:foodb/core/rxvms/managers/recipe_list_manager.dart';
 import 'package:foodb/ui/vm/vm_recipe_list.dart';
 import 'package:foodb/ui/vm/vm_recipe.dart';
 import 'package:get_it/get_it.dart';
@@ -6,15 +7,17 @@ import 'package:get_it/get_it.dart';
 final locator = GetIt.I;
 
 void initLocator() {
-  _setupRepositories();
+  _setupManagers();
   _setupBlocs();
 }
 
-void _setupRepositories() {
-  locator.registerLazySingleton<IRecipeRepository>(() => RecipeRepository());
+void _setupManagers() {
+  locator.registerLazySingleton(() => RecipeListManager(mock));
 }
 
+
+
 void _setupBlocs() {
-  locator.registerFactory(() => VMRecipeList(locator()));
-  locator.registerFactory(() => VMRecipe(locator()));
+  locator.registerFactory(() => VMRecipeList());
+  locator.registerFactory(() => VMRecipe());
 }

@@ -1,7 +1,6 @@
-import 'package:foodb/core/domain/entities/ingredient.dart';
-import 'package:foodb/core/domain/entities/step.dart';
-
+import 'ingredient.dart';
 import 'model.dart';
+import 'step.dart';
 
 class Recipe extends Model {
   var name = "";
@@ -72,3 +71,63 @@ class Recipe extends Model {
         steps: steps ?? this.steps,
       );
 }
+
+final mockRecipe = Recipe(
+  id: "mock",
+  name: "Protein apple pie pancakes",
+  image: "images/food.png",
+  description:
+      "Four ingredients, delicious, quick and easy! You can also add cinamon to taste, a touch of lemon juice and a dash of ground ginger for even tastier results.",
+  ingredients: [
+    Ingredient(
+      id: "1",
+      name: "Unsweetned apple sauce",
+      quantity: "120",
+      unit: Unit.grams,
+    ),
+    Ingredient(
+      id: "2",
+      name: "Egg whites",
+      quantity: "1/3",
+      unit: Unit.cups,
+    ),
+    Ingredient(
+      id: "3",
+      name: "Flour",
+      quantity: "40",
+      unit: Unit.grams,
+    ),
+    Ingredient(
+      id: "4",
+      name: "Vanilla protein powder",
+      quantity: "30",
+      unit: Unit.grams,
+    ),
+  ],
+  steps: [
+    Step(id: "1", description: "pour all the wet ingredients in a bowl. "),
+    Step(id: "2", description: "Mix thoroughly."),
+    Step(id: "3", description: "Add the dry ingredients. "),
+    Step(id: "4", description: "Mix thoroughly."),
+    Step(
+        id: "5",
+        description:
+            "cook in batches for about 2-3 minutes each side. I like mine 3 to 4 inches in diameter. "),
+  ],
+);
+
+final mock = <Recipe>[
+  Recipe(
+    id: "mock1",
+    name: "Recipe 1",
+  ),
+  Recipe(
+    id: "mock2",
+    name: "Recipe 2",
+  ),
+  Recipe(
+    id: "mock3",
+    name: "Recipe 3",
+  ),
+  mockRecipe,
+];

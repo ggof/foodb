@@ -1,55 +1,40 @@
 import 'package:flutter/foundation.dart';
-import 'package:foodb/core/domain/entities/recipe.dart';
-import 'package:foodb/core/domain/repositories/recipe_repository.dart';
+import 'package:foodb/core/entities/recipe.dart';
+import 'package:foodb/core/rxvms/commands/command.dart';
+import 'package:foodb/core/rxvms/managers/recipe_list_manager.dart';
+import 'package:foodb/locator.dart';
 import 'package:foodb/ui/vm/vm.dart';
 
+class VMRecipeList extends VM implements CommandPresenter {
+  final list = ValueNotifier<Iterable<Recipe>>([]);
+  final RecipeListManager manager = locator();
 
-class VMRecipeList extends VM {
-  final list = ValueNotifier<List<Recipe>>([]);
-  final filtered = ValueNotifier<List<Recipe>>([]);
-  var _filter = "";
-
-  final IRecipeRepository repository;
-
-  VMRecipeList(this.repository);
+  VMRecipeList() {
+    manager.subscribe(onUpdate);
+  }
 
   void init() {
-    setBusy();
-    repository.subscribeToRecipeList(onUpdate);
+    manager.execute(this, GetAllCommand());
   }
 
-  void filterBy(String value) {
-    _filter = value;
-    filtered.value = list.value
-        .where((element) =>
-        element.name.toLowerCase().contains(_filter.toLowerCase()))
-        .toList();
-  }
+  void setFilter(String value) => manager.execute(this, GetFilteredCommand(value, onUpdate));
 
-  void onUpdate(List<Recipe> value) {
+  void onUpdate(Iterable<Recipe> value) {
     list.value = value;
-    filterBy(_filter);
-    setIdle();
-  }
-}
 
-typedef ProxyModifier<A, B> = B Function(A value);
-
-class ProxyNotifier<A, B> with ChangeNotifier implements ValueListenable<B> {
-  B _value;
-  final ValueListenable<A> listenable;
-  final ProxyModifier<A, B> modifier;
-
-  ProxyNotifier(this.modifier, this.listenable) {
-    listenable.addListener(update);
-  }
-
-  void update() {
-    _value = modifier(listenable.value);
-    notifyListeners();
+    if (this.state.runtimeType != Idle) {
+      setIdle();
+    }
   }
 
   @override
-  // TODO: implement value
-  B get value => _value;
+  //TODO: change this
+  onError(String error) => print(error);
+
+  @override
+  void onLoading() => setBusy();
+
+  @override
+  void onSuccess() => setIdle();
+
 }

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart' hide Step;
-import 'package:foodb/core/domain/entities/ingredient.dart';
-import 'package:foodb/core/domain/entities/step.dart';
+import 'package:foodb/core/entities/ingredient.dart';
+import 'package:foodb/core/entities/step.dart';
 import 'package:foodb/router.dart';
-import 'package:foodb/ui/components/bloc_loader.dart';
+import 'package:foodb/ui/components/vm_loader.dart';
 import 'package:foodb/ui/components/spacer.dart';
+import 'package:foodb/ui/helpers/text_value.dart';
 import 'package:foodb/ui/vm/vm_recipe.dart';
 
 class PageRecipe extends StatelessWidget {
@@ -41,37 +42,38 @@ class PageRecipe extends StatelessWidget {
                         child: Column(
                           children: [
                             VerticalSpacer(40),
-                            ValueListenableBuilder<String>(
+                            ValueListenableBuilder<TextValue>(
                               valueListenable: vm.name,
-                              builder: (context, value, _) => Text(value,
+                              builder: (context, value, _) => Text(value.value,
                                   style: Theme.of(context).textTheme.headline1),
                             ),
                             VerticalSpacer(16),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                ValueListenableBuilder<int>(
+                                ValueListenableBuilder<TextValue>(
                                   valueListenable: vm.calories,
                                   builder: (context, value, _) => Text(
-                                    "Calories: $value",
+                                    "Calories: ${value.value}",
                                     style:
                                         Theme.of(context).textTheme.headline3,
                                   ),
                                 ),
-                                ValueListenableBuilder<int>(
+                                ValueListenableBuilder<TextValue>(
                                   valueListenable: vm.proteins,
-                                  builder:(context, value, _) => Text(
-                                    "Protein: $value grams" ,
-                                    style: Theme.of(context).textTheme.headline3,
+                                  builder: (context, value, _) => Text(
+                                    "Protein: ${value.value} grams",
+                                    style:
+                                        Theme.of(context).textTheme.headline3,
                                   ),
                                 ),
                               ],
                             ),
                             VerticalSpacer(16),
-                            ValueListenableBuilder<String>(
+                            ValueListenableBuilder<TextValue>(
                               valueListenable: vm.description,
-                              builder:(context, value, _) => Text(
-                                value ?? "No description provided",
+                              builder: (context, value, _) => Text(
+                                value.value ?? "No description provided",
                                 style: Theme.of(context).textTheme.bodyText1,
                                 textAlign: TextAlign.center,
                               ),
@@ -125,7 +127,7 @@ class PageRecipe extends StatelessWidget {
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                   Text(
-                    "${i.quantity} ${i.unit.name}",
+                    "${i.quantity} ${UnitHelper.toValue(i.unit)}",
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                 ],
@@ -188,7 +190,8 @@ class _Header extends SliverPersistentHeaderDelegate {
                 ),
                 IconButton(
                   icon: Icon(Icons.edit),
-                  onPressed: () => Navigator.of(context).pushNamed(routeRecipesAdd, arguments: {"id": id}),
+                  onPressed: () => Navigator.of(context)
+                      .pushNamed(routeRecipesAdd, arguments: {"id": id}),
                 ),
               ],
             ),

@@ -71,13 +71,14 @@ class MyApp extends StatelessWidget {
             fontWeight: FontWeight.w300,
           ),
           bodyText1: TextStyle(
-            color: Color(0xFFFFFFFF),
+            color: Colors.white,
             fontSize: 16,
             fontWeight: FontWeight.normal,
           ),
         ),
         floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: Color(0xFF6688FF)),
         iconTheme: IconThemeData(color: Colors.white),
+        dialogTheme: DialogTheme(backgroundColor: Color(0xFFD0D0D0), elevation: 0),
         // This makes the visual density adapt to the platform that you run
         // the app on. For desktop platforms, the controls will be smaller and
         // closer together (more dense) than on mobile platforms.

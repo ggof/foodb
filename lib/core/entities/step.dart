@@ -1,4 +1,4 @@
-import 'package:foodb/core/domain/entities/model.dart';
+import 'model.dart';
 
 class Step extends Model {
   final String description;
