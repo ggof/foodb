@@ -4,6 +4,8 @@ import 'package:foodb/ui/vm/vm_recipe_list.dart';
 import 'package:foodb/ui/vm/vm_recipe.dart';
 import 'package:get_it/get_it.dart';
 
+import 'core/rxvms/managers/manager.dart';
+
 final locator = GetIt.I;
 
 void initLocator() {
@@ -12,10 +14,10 @@ void initLocator() {
 }
 
 void _setupManagers() {
-  locator.registerLazySingleton(() => RecipeListManager(mock));
+  locator.registerLazySingleton<Manager<List<Recipe>>>(
+    () => RecipeListManager(mock),
+  );
 }
-
-
 
 void _setupBlocs() {
   locator.registerFactory(() => VMRecipeList());

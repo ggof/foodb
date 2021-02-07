@@ -3,6 +3,7 @@ import 'package:foodb/core/entities/ingredient.dart';
 import 'package:foodb/core/entities/recipe.dart';
 import 'package:foodb/core/entities/step.dart';
 import 'package:foodb/core/rxvms/commands/command.dart';
+import 'package:foodb/core/rxvms/commands/success_option.dart';
 import 'package:foodb/core/rxvms/managers/recipe_list_manager.dart';
 import 'package:foodb/router.dart';
 import 'package:foodb/ui/helpers/list_notifier.dart';
@@ -29,7 +30,7 @@ class VMRecipe extends VM implements CommandPresenter {
   void init(String id) {
     if (id == null) return;
     _id = id;
-    manager.execute(this, GetSingleCommand(id, onUpdate));
+    manager.execute(this, GetSingleCommand(id, onUpdate), StopLoading());
   }
 
   void onUpdate(Recipe value) {
@@ -91,7 +92,9 @@ class VMRecipe extends VM implements CommandPresenter {
       errors = true;
     }
 
-    if (value.calories == null || value.proteins == null || value.servings == null) {
+    if (value.calories == null ||
+        value.proteins == null ||
+        value.servings == null) {
       errors = true;
     }
 
@@ -100,7 +103,11 @@ class VMRecipe extends VM implements CommandPresenter {
     final Command<List<Recipe>> command =
         id == null ? InsertCommand(value) : UpdateCommand(value);
 
-    manager.execute(this, command);
+    manager.execute(
+      this,
+      command,
+      NavigateTo(NavigationEvent(routeRecipes)),
+    );
   }
 
   @override
@@ -110,8 +117,5 @@ class VMRecipe extends VM implements CommandPresenter {
   void onLoading() => setBusy();
 
   @override
-  void onSuccess() {
-    setIdle();
-    navigate(NavigationEvent(routeRecipes));
-  }
+  void onSuccess(SuccessOption option) => option(this);
 }

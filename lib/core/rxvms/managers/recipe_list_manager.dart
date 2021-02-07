@@ -5,7 +5,7 @@ import 'package:foodb/core/rxvms/commands/command.dart';
 
 import 'manager.dart';
 
-class RecipeListManager extends Manager<List<Recipe>> {
+class RecipeListManager extends BaseManager<List<Recipe>> {
   RecipeListManager([List<Recipe> initialState = const []])
       : super(initialState);
 }

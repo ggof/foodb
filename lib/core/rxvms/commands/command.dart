@@ -1,11 +1,12 @@
 import 'dart:async';
 
+import 'package:foodb/core/rxvms/commands/success_option.dart';
 import 'package:meta/meta.dart';
 
 
 abstract class CommandPresenter {
   void onLoading();
-  void onSuccess();
+  void onSuccess(SuccessOption option);
   void onError(String error);
 }
 
