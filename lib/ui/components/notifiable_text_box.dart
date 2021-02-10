@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:foodb/ui/components/text_box.dart';
 import 'package:foodb/ui/helpers/text_value.dart';
 
-class NotifiableTextBox extends StatefulWidget {
+class NotifiableTextBox extends StatelessWidget {
   final Widget prefixIcon;
   final Widget suffixIcon;
   final String hintText;
@@ -21,33 +21,18 @@ class NotifiableTextBox extends StatefulWidget {
     this.prefixIcon,
     this.suffixIcon,
   });
-
-  @override
-  _NotifiableTextBoxState createState() => _NotifiableTextBoxState();
-}
-
-class _NotifiableTextBoxState extends State<NotifiableTextBox> {
-  final controller = TextEditingController();
-
   @override
   Widget build(BuildContext context) => ValueListenableBuilder<TextValue>(
-        valueListenable: widget.listenable,
+        valueListenable: listenable,
         builder: (context, value, _) {
-          controller.text = value.value;
-          controller.value = TextEditingValue(
-            text: value.value ?? "",
-            selection: TextSelection.collapsed(offset: value?.value?.length ?? 0),
-          );
-
           return TextBox(
-            controller: controller,
             error: value.error,
-            hintText: widget.hintText,
-            keyboardType: widget.keyboardType,
-            lines: widget.lines,
-            onChanged: widget.onChanged,
-            prefixIcon: widget.prefixIcon,
-            suffixIcon: widget.suffixIcon,
+            hintText: hintText,
+            keyboardType: keyboardType,
+            lines: lines,
+            onChanged: onChanged,
+            prefixIcon: prefixIcon,
+            suffixIcon: suffixIcon,
           );
         },
       );

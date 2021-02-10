@@ -1,9 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:foodb/core/entities/recipe.dart';
 import 'package:foodb/locator.dart';
 import 'package:foodb/router.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
-  initLocator();
+void main() async {
+  await Hive.initFlutter();
+  Hive.registerAdapter(RecipeListAdapter());
+  await initLocator();
   runApp(MyApp());
 }
 
@@ -17,7 +24,8 @@ class MyApp extends StatelessWidget {
         primaryColor: Color(0xFF6688FF),
         accentColor: Color(0xFFF4FAFC),
         scaffoldBackgroundColor: Color(0xFFFFFFFF),
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(selectedItemColor: Color(0xFF000000)),
+        bottomNavigationBarTheme:
+            BottomNavigationBarThemeData(selectedItemColor: Color(0xFF000000)),
         textTheme: TextTheme(
           headline1: TextStyle(
             fontSize: 22,
@@ -42,7 +50,8 @@ class MyApp extends StatelessWidget {
         // the app on. For desktop platforms, the controls will be smaller and
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
-        floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: Color(0xFF6688FF)),
+        floatingActionButtonTheme:
+            FloatingActionButtonThemeData(backgroundColor: Color(0xFF6688FF)),
       ),
       darkTheme: ThemeData(
         primaryColor: Color(0xFF6688FF),
@@ -50,10 +59,9 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Color(0xff202020),
         dialogBackgroundColor: Color(0xFF202020),
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          backgroundColor: Color(0xFF101010),
-          selectedItemColor: Color(0xFFD0D0D0),
-          unselectedItemColor: Color(0xFFBBBBBB)
-        ),
+            backgroundColor: Color(0xFF101010),
+            selectedItemColor: Color(0xFFD0D0D0),
+            unselectedItemColor: Color(0xFFBBBBBB)),
         textTheme: TextTheme(
           headline1: TextStyle(
             fontSize: 22,
@@ -76,9 +84,11 @@ class MyApp extends StatelessWidget {
             fontWeight: FontWeight.normal,
           ),
         ),
-        floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: Color(0xFF6688FF)),
+        floatingActionButtonTheme:
+            FloatingActionButtonThemeData(backgroundColor: Color(0xFF6688FF)),
         iconTheme: IconThemeData(color: Colors.white),
-        dialogTheme: DialogTheme(backgroundColor: Color(0xFFD0D0D0), elevation: 0),
+        dialogTheme:
+            DialogTheme(backgroundColor: Color(0xFFD0D0D0), elevation: 0),
         // This makes the visual density adapt to the platform that you run
         // the app on. For desktop platforms, the controls will be smaller and
         // closer together (more dense) than on mobile platforms.
@@ -86,5 +96,27 @@ class MyApp extends StatelessWidget {
       ),
       onGenerateRoute: onGenerateRoute,
     );
+  }
+}
+
+class RecipeListAdapter implements TypeAdapter<List<Recipe>> {
+  @override
+  List<Recipe> read(BinaryReader reader) {
+    final str = reader.readString();
+    final json = jsonDecode(str);
+    final state =
+        (json as List<dynamic>).map((e) => Recipe.fromJson(e)).toList();
+
+    return state;
+  }
+
+  @override
+  int get typeId => 32;
+
+  @override
+  void write(BinaryWriter writer, List<Recipe> obj) {
+    final json = obj.map((e) => e.toJson()).toList();
+    final str = jsonEncode(json);
+    writer.writeString(str);
   }
 }

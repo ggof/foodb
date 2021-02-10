@@ -20,7 +20,7 @@ enum Unit {
 
 class UnitHelper {
   static Unit fromJSON(String value) =>
-      Unit.values.firstWhere((u) => u.toString() == "Unit.$value");
+      Unit.values.firstWhere((u) => u.toString() == value);
 
   static String toJSON(Unit value) => value.toString();
   static String toValue(Unit value) => value.toString().split(".").last;
@@ -35,7 +35,7 @@ class Ingredient extends Model {
     String id,
     this.name,
     this.quantity,
-    this.unit,
+    this.unit = Unit.grams,
   }) : super(id: id);
 
   factory Ingredient.fromJSON(Map<String, dynamic> json) => Ingredient(

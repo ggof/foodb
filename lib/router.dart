@@ -7,7 +7,7 @@ import 'package:foodb/ui/pages/page_recipe.dart';
 Route<dynamic> onGenerateRoute(RouteSettings params) {
   switch (params.name) {
     case routeRecipesAdd:
-      final id = params.arguments == null ? "" : (params.arguments as Map<String, dynamic>)["id"];
+      final id = params.arguments == null ? null : (params.arguments as Map<String, dynamic>)["id"];
       return MaterialPageRoute(builder: (context) => PageAddRecipe(id: id));
     case routerecipesSingle:
       return MaterialPageRoute(

@@ -3,34 +3,43 @@ import 'package:foodb/core/entities/ingredient.dart';
 import 'package:foodb/core/entities/recipe.dart';
 import 'package:foodb/core/entities/step.dart';
 import 'package:foodb/core/rxvms/commands/command.dart';
-import 'package:foodb/core/rxvms/commands/success_option.dart';
+import 'package:foodb/core/rxvms/options/options.dart';
+import 'package:foodb/core/rxvms/options/success_option.dart';
+import 'package:foodb/core/rxvms/managers/manager.dart';
 import 'package:foodb/core/rxvms/managers/recipe_list_manager.dart';
 import 'package:foodb/router.dart';
 import 'package:foodb/ui/helpers/list_notifier.dart';
 import 'package:foodb/ui/helpers/text_value.dart';
 import 'package:foodb/ui/vm/vm.dart';
+import 'package:foodb/ui/vm/vm_ingredient.dart';
+import 'package:foodb/ui/vm/vm_step.dart';
 
 import '../../locator.dart';
 
-class VMRecipe extends VM implements CommandPresenter {
+class VMRecipe extends VM {
   String _id = "";
 
   String get id => _id;
   final image = ValueNotifier(TextValue());
   final name = ValueNotifier(TextValue());
   final description = ValueNotifier(TextValue());
-  final ingredients = ListNotifier(const <Ingredient>[]);
-  final steps = ListNotifier(const <Step>[]);
+  final ingredients = ListNotifier(<VMIngredient>[]);
+  final steps = ListNotifier(<VMStep>[]);
   final calories = ValueNotifier(TextValue());
   final proteins = ValueNotifier(TextValue());
   final servings = ValueNotifier(TextValue());
 
-  final RecipeListManager manager = locator();
+  final Manager<List<Recipe>> manager = locator();
 
   void init(String id) {
     if (id == null) return;
     _id = id;
-    manager.execute(this, GetSingleCommand(id, onUpdate), StopLoading());
+    manager.execute(
+      this,
+      GetSingleCommand(id, onUpdate),
+      onLoading: SetLoading(),
+      onSuccess: StopLoading(),
+    );
   }
 
   void onUpdate(Recipe value) {
@@ -40,8 +49,8 @@ class VMRecipe extends VM implements CommandPresenter {
     proteins.value = TextValue(value: value.proteins.toString());
     servings.value = TextValue(value: value.servings.toString());
     image.value = TextValue(value: value.image);
-    steps.value = value.steps;
-    ingredients.value = value.ingredients;
+    steps.value = value.steps.map((e) => VMStep(e)).toList();
+    ingredients.value = value.ingredients.map((e) => VMIngredient(e)).toList();
 
     setIdle();
   }
@@ -69,14 +78,22 @@ class VMRecipe extends VM implements CommandPresenter {
     notifier.value = TextValue(value: value, error: error);
   }
 
+  void addIngredient() => ingredients.add(VMIngredient(Ingredient()));
+  void addStep() => steps.add(VMStep(Step()));
+
+  void removeIngredient(VMIngredient value) => ingredients.remove(value);
+  void removeStep(VMStep value) => steps.remove(value);
+
+  // TODO: Move all of this logic in separate Validators
+  // Also clean up this mess
   Future<void> submit() async {
     final value = Recipe(
       id: id,
       name: name.value.value,
       description: description.value.value,
       image: image.value.value,
-      ingredients: ingredients.value,
-      steps: steps.value,
+      ingredients: [for (final vm in ingredients.value) vm.value],
+      steps: [for (final vm in steps.value) vm.value],
       calories: int.tryParse(calories.value.value),
       proteins: int.tryParse(proteins.value.value),
       servings: int.tryParse(servings.value.value),
@@ -88,7 +105,10 @@ class VMRecipe extends VM implements CommandPresenter {
       errors = true;
     }
 
-    if (value.ingredients.isEmpty || value.steps.isEmpty) {
+    if (value.ingredients.isEmpty ||
+        value.steps.isEmpty ||
+        value.ingredients.any((e) => e == null) ||
+        value.steps.any((e) => e == null)) {
       errors = true;
     }
 
@@ -106,16 +126,8 @@ class VMRecipe extends VM implements CommandPresenter {
     manager.execute(
       this,
       command,
-      NavigateTo(NavigationEvent(routeRecipes)),
+      onLoading: SetLoading(),
+      onSuccess: NavigateTo(NavigationEvent(routeRecipes)),
     );
   }
-
-  @override
-  void onError(String error) => print(error);
-
-  @override
-  void onLoading() => setBusy();
-
-  @override
-  void onSuccess(SuccessOption option) => option(this);
 }

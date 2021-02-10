@@ -2,6 +2,8 @@ import 'package:foodb/core/entities/recipe.dart';
 import 'package:foodb/core/errors/not_found_error.dart';
 import 'package:foodb/core/helpers/id_generator.dart';
 import 'package:foodb/core/rxvms/commands/command.dart';
+import 'package:foodb/core/services/service.dart';
+import 'package:foodb/locator.dart';
 
 import 'manager.dart';
 
@@ -11,10 +13,10 @@ class RecipeListManager extends BaseManager<List<Recipe>> {
 }
 
 //TODO: move commands in separate file?
-
 class GetSingleCommand extends Command<List<Recipe>> {
   final String id;
   final UpdateCallback<Recipe> onValue;
+
   GetSingleCommand(this.id, this.onValue);
 
   @override
@@ -32,10 +34,13 @@ class GetSingleCommand extends Command<List<Recipe>> {
 }
 
 class GetAllCommand extends Command<List<Recipe>> {
+  final RecipeService service = locator();
+
   @override
-  Future<List<Recipe>> call(List<Recipe> state) {
-    // TODO: fetch all recipes and return them
-    return null;
+  Future<List<Recipe>> call(List<Recipe> state) async {
+    final newState = await service.getAll();
+
+    return newState;
   }
 }
 
@@ -53,20 +58,30 @@ class GetFilteredCommand extends Command<List<Recipe>> {
 }
 
 class InsertCommand extends Command<List<Recipe>> {
+  final RecipeService service = locator();
+
   final Recipe value;
   InsertCommand(this.value);
 
   @override
-  Future<List<Recipe>> call(List<Recipe> state) async =>
-      [...state, value.copyWith(id: IDGenerator.randomID())];
+  Future<List<Recipe>> call(List<Recipe> state) async {
+    final newState = [...state, value.copyWith(id: IDGenerator.randomID())];
+    await service.update(newState);
+    return newState;
+  }
 }
 
 class UpdateCommand extends Command<List<Recipe>> {
+  final RecipeService service = locator();
+
   final Recipe value;
   UpdateCommand(this.value);
 
   @override
   // Remove old value, add new one. Order is not preserved...
-  Future<List<Recipe>> call(List<Recipe> state) async =>
-      [...state.where((e) => e.id != value.id), value];
+  Future<List<Recipe>> call(List<Recipe> state) async {
+    final newState = [...state.where((e) => e.id != value.id), value].toList();
+    await service.update(newState);
+    return newState;
+  }
 }

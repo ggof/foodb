@@ -3,12 +3,9 @@ import 'package:foodb/ui/vm/vm.dart';
 abstract class SuccessOption {
   const SuccessOption();
   void call(VM vm);
-}
 
-class DoNothing extends SuccessOption {
-  const DoNothing();
-  @override
-  void call(VM vm) {}
+  factory SuccessOption.stopLoading() => StopLoading();
+  factory SuccessOption.navigateTo(NavigationEvent event) => NavigateTo(event);
 }
 
 class StopLoading extends SuccessOption {

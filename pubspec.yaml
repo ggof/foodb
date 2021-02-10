@@ -23,6 +23,8 @@ environment:
 dependencies:
   get_it:
   rxdart:
+  hive:
+  hive_flutter:
   flutter:
     sdk: flutter
 

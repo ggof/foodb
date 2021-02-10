@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart' hide Step;
 import 'package:foodb/core/entities/ingredient.dart';
-import 'package:foodb/core/entities/step.dart';
 import 'package:foodb/router.dart';
 import 'package:foodb/ui/components/vm_loader.dart';
 import 'package:foodb/ui/components/spacer.dart';
 import 'package:foodb/ui/helpers/text_value.dart';
+import 'package:foodb/ui/vm/vm_ingredient.dart';
 import 'package:foodb/ui/vm/vm_recipe.dart';
+import 'package:foodb/ui/vm/vm_step.dart';
 
 class PageRecipe extends StatelessWidget {
   final String id;
@@ -83,7 +84,7 @@ class PageRecipe extends StatelessWidget {
                                 style: Theme.of(context).textTheme.headline2),
                             VerticalSpacer(16),
                             Divider(color: Colors.grey.shade400),
-                            ValueListenableBuilder<List<Ingredient>>(
+                            ValueListenableBuilder<List<VMIngredient>>(
                               valueListenable: vm.ingredients,
                               builder: (context, list, _) => Column(
                                 children: list
@@ -96,7 +97,7 @@ class PageRecipe extends StatelessWidget {
                                 style: Theme.of(context).textTheme.headline2),
                             VerticalSpacer(16),
                             Divider(color: Colors.grey.shade400),
-                            ValueListenableBuilder<List<Step>>(
+                            ValueListenableBuilder<List<VMStep>>(
                               valueListenable: vm.steps,
                               builder: (context, list, _) => Column(
                                 children:
@@ -115,19 +116,19 @@ class PageRecipe extends StatelessWidget {
         ),
       );
 
-  Widget Function(Ingredient) toIngredientItem(BuildContext context) =>
-      (Ingredient i) => Column(
+  Widget Function(VMIngredient) toIngredientItem(BuildContext context) =>
+      (VMIngredient i) => Column(
             children: [
               VerticalSpacer(8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    i.name,
+                    i.name.value.value,
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                   Text(
-                    "${i.quantity} ${UnitHelper.toValue(i.unit)}",
+                    "${i.quantity.value.value} ${UnitHelper.toValue(i.unit.value)}",
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                 ],
@@ -137,18 +138,19 @@ class PageRecipe extends StatelessWidget {
             ],
           );
 
-  Widget Function(Step) toStepItem(BuildContext context) => (Step i) => Column(
-        children: [
-          VerticalSpacer(8),
-          Text(
-            i.description,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyText1,
-          ),
-          VerticalSpacer(8),
-          Divider(color: Colors.grey.shade400)
-        ],
-      );
+  Widget Function(VMStep) toStepItem(BuildContext context) =>
+      (VMStep i) => Column(
+            children: [
+              VerticalSpacer(8),
+              Text(
+                i.description.value.value,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyText1,
+              ),
+              VerticalSpacer(8),
+              Divider(color: Colors.grey.shade400)
+            ],
+          );
 }
 
 class _Header extends SliverPersistentHeaderDelegate {

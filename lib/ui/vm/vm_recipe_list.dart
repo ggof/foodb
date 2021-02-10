@@ -1,13 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:foodb/core/entities/recipe.dart';
-import 'package:foodb/core/rxvms/commands/command.dart';
-import 'package:foodb/core/rxvms/commands/success_option.dart';
+import 'package:foodb/core/rxvms/options/options.dart';
 import 'package:foodb/core/rxvms/managers/manager.dart';
 import 'package:foodb/core/rxvms/managers/recipe_list_manager.dart';
 import 'package:foodb/locator.dart';
 import 'package:foodb/ui/vm/vm.dart';
 
-class VMRecipeList extends VM implements CommandPresenter {
+class VMRecipeList extends VM {
   final list = ValueNotifier<Iterable<Recipe>>([]);
   final Manager<List<Recipe>> manager = locator();
 
@@ -16,13 +15,18 @@ class VMRecipeList extends VM implements CommandPresenter {
   }
 
   void init() {
-    manager.execute(this, GetAllCommand(), DoNothing());
+    manager.execute(this, GetAllCommand(),
+        onLoading: SetLoading(), onSuccess: StopLoading());
   }
 
-  void setFilter(String value) => manager.execute(
+  void setFilter(String value) =>
+      manager.execute(this, GetFilteredCommand(value, onUpdate));
+
+  Future<void> refresh() => manager.execute(
         this,
-        GetFilteredCommand(value, onUpdate),
-        DoNothing(),
+        GetAllCommand(),
+        onLoading: DoNothing(),
+        onSuccess: StopLoading(),
       );
 
   void onUpdate(Iterable<Recipe> value) {
@@ -32,14 +36,4 @@ class VMRecipeList extends VM implements CommandPresenter {
       setIdle();
     }
   }
-
-  @override
-  //TODO: change this
-  onError(String error) => print(error);
-
-  @override
-  void onLoading() => setBusy();
-
-  @override
-  void onSuccess(SuccessOption option) => option(this);
 }

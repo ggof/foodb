@@ -24,7 +24,7 @@ class Recipe extends Model {
     this.steps = const [],
   }) : super(id: id);
 
-  factory Recipe.fromJSON(Map<String, dynamic> json) => Recipe(
+  factory Recipe.fromJson(Map<String, dynamic> json) => Recipe(
         id: json["id"],
         image: json["image"],
         name: json["name"],
@@ -32,11 +32,13 @@ class Recipe extends Model {
         calories: json["calories"],
         servings: json["servings"],
         description: json["description"],
-        ingredients: json["ingredients"].map((i) => Ingredient.fromJSON(i)),
-        steps: json["steps"].map((i) => Step.fromJSON(i)),
+        ingredients: json["ingredients"]
+            .map<Ingredient>((i) => Ingredient.fromJSON(i))
+            .toList(),
+        steps: json["steps"].map<Step>((i) => Step.fromJSON(i)).toList(),
       );
 
-  Map<String, dynamic> toJSON() => {
+  Map<String, dynamic> toJson() => {
         "id": id,
         "image": image,
         "name": name,
@@ -44,8 +46,8 @@ class Recipe extends Model {
         "proteins": proteins,
         "calories": calories,
         "servings": servings,
-        "ingredients": ingredients.map((i) => i.toJSON()),
-        "steps": steps.map((i) => i.toJSON()),
+        "ingredients": ingredients.map((i) => i.toJSON()).toList(),
+        "steps": steps.map((i) => i.toJSON()).toList(),
       };
 
   Recipe copyWith({

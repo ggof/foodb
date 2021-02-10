@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:foodb/core/rxvms/commands/command.dart';
-import 'package:foodb/core/rxvms/commands/success_option.dart';
+import 'package:foodb/core/rxvms/options/options.dart';
 import 'package:rxdart/subjects.dart';
 
 typedef UpdateCallback<T> = void Function(T value);
@@ -10,9 +10,10 @@ abstract class Manager<T> {
   StreamSubscription<T> subscribe(UpdateCallback<T> callback);
   Future<void> execute(
     CommandPresenter presenter,
-    Command<T> command, [
+    Command<T> command, {
+    LoadingOption onLoading,
     SuccessOption onSuccess,
-  ]);
+  });
 }
 
 abstract class BaseManager<T> implements Manager<T> {
@@ -26,11 +27,12 @@ abstract class BaseManager<T> implements Manager<T> {
 
   Future<void> execute(
     CommandPresenter presenter,
-    Command<T> command, [
+    Command<T> command, {
     SuccessOption onSuccess = const DoNothing(),
-  ]) async {
+    LoadingOption onLoading = const DoNothing(),
+  }) async {
     try {
-      presenter.onLoading();
+      presenter.onLoading(onLoading);
 
       final state = await command(_subject.value);
       if (state != null) {
