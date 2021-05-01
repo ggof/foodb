@@ -10,10 +10,9 @@ class HiveRecipeService implements RecipeService {
   HiveRecipeService(this.box);
   @override
   Future<List<Recipe>> getAll() async {
-    final json = await box.get(key, defaultValue: "[]");
+    final json = await box.get(key) ?? "[]";
     final List<dynamic> itemList = jsonDecode(json);
-    final newState = itemList.map((i) => Recipe.fromJson(i)).toList();
-    return newState;
+    return itemList.map((i) => Recipe.fromJson(i)).toList();
   }
 
   @override

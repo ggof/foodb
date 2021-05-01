@@ -9,13 +9,13 @@ typedef VoidCallback<T extends VM> = void Function(T bloc);
 typedef BuilderFunc<T extends VM> = Widget Function(BuildContext context, T vm);
 
 class VMLoader<T extends VM> extends StatefulWidget {
-  final VoidCallback<T> onVMReady;
+  final VoidCallback<T>? onVMReady;
   final BuilderFunc<T> builder;
 
-  const VMLoader({
-    @required this.builder,
+  const VMLoader(
+    this.builder, {
     this.onVMReady,
-  }) : assert(builder != null);
+  });
 
   @override
   State<VMLoader<T>> createState() => VMLoaderState<T>();
@@ -30,12 +30,12 @@ class VMLoaderState<T extends VM> extends State<VMLoader<T>> {
   void initState() {
     super.initState();
     if (widget.onVMReady != null) {
-      widget.onVMReady(vm);
+      widget.onVMReady!(vm);
     }
   }
 
   @override
-  Widget build(BuildContext context) => ValueListenableBuilder<NavigationEvent>(
+  Widget build(BuildContext context) => ValueListenableBuilder<NavigationEvent?>(
         valueListenable: vm.navigation,
         builder: (context, dest, child) {
           if (dest != null) {
@@ -44,7 +44,7 @@ class VMLoaderState<T extends VM> extends State<VMLoader<T>> {
             );
           }
 
-          return child;
+          return child!;
         },
         child: widget.builder(context, vm),
       );

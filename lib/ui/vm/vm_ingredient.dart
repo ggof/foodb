@@ -15,21 +15,23 @@ class VMIngredient extends VM {
     unit.value = ingredient.unit;
   }
 
-  setName(String value) => _setTextValue(name, value);
-  setQuantity(String value) => _setTextValue(quantity, value);
-  setUnit(Unit value) => unit.value = value;
+  void setName(String? value) => _setTextValue(name, value ?? "");
+
+  void setQuantity(String? value) => _setTextValue(quantity, value ?? "");
+
+  void setUnit(Unit? value) => unit.value = value ?? Unit.grams;
 
   _setTextValue(ValueNotifier<TextValue> notifier, String value) {
     final error = value.isEmpty ? "this field must not be empty" : "";
     notifier.value = TextValue(value: value, error: error);
   }
 
-  Ingredient get value =>
+  Ingredient? get value =>
       name.value.error.isNotEmpty || quantity.value.error.isNotEmpty
           ? null
           : Ingredient(
               name: name.value.value,
-              unit: unit.value,
               quantity: quantity.value.value,
+              unit: unit.value,
             );
 }

@@ -4,14 +4,16 @@ import 'package:foodb/core/entities/recipe.dart';
 
 class CardRecipe extends StatelessWidget {
   final Recipe recipe;
-  final Function onPressed;
+  final void Function()? onPressed;
+  final void Function()? onLongPress;
 
-  const CardRecipe({Key key, this.recipe, this.onPressed}) : super(key: key);
+  const CardRecipe(this.recipe, {Key? key, this.onPressed, this.onLongPress}) : super(key: key);
 
   @override
   Widget build(BuildContext context) => MaterialButton(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
         onPressed: onPressed,
+        onLongPress: onLongPress,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -19,7 +21,7 @@ class CardRecipe extends StatelessWidget {
               tag: recipe.id,
               child: Container(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).accentColor,
+                  color: Theme.of(context).colorScheme.secondary,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: AspectRatio(

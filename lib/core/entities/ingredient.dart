@@ -16,6 +16,7 @@ enum Unit {
   cups,
   tablespoons,
   teaspoons,
+  whole,
 }
 
 class UnitHelper {
@@ -23,6 +24,7 @@ class UnitHelper {
       Unit.values.firstWhere((u) => u.toString() == value);
 
   static String toJSON(Unit value) => value.toString();
+
   static String toValue(Unit value) => value.toString().split(".").last;
 }
 
@@ -32,11 +34,11 @@ class Ingredient extends Model {
   final Unit unit;
 
   Ingredient({
-    String id,
-    this.name,
-    this.quantity,
+    String id = "",
+    this.name = "",
+    this.quantity = "",
     this.unit = Unit.grams,
-  }) : super(id: id);
+  }) : super(id);
 
   factory Ingredient.fromJSON(Map<String, dynamic> json) => Ingredient(
         id: json["id"],
@@ -53,5 +55,5 @@ class Ingredient extends Model {
       };
 
   static bool isValid(Ingredient i) =>
-      i.name.isNotEmpty && i.quantity.isNotEmpty && i.unit != null;
+      i.name.isNotEmpty && i.quantity.isNotEmpty;
 }

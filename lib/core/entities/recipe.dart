@@ -12,26 +12,26 @@ class Recipe extends Model {
   final List<Ingredient> ingredients;
   final List<Step> steps;
 
-  Recipe({
+  Recipe(
     String id,
     this.image,
     this.name,
     this.description,
     this.proteins,
     this.calories,
-    this.servings,
+    this.servings, {
     this.ingredients = const [],
     this.steps = const [],
-  }) : super(id: id);
+  }) : super(id);
 
   factory Recipe.fromJson(Map<String, dynamic> json) => Recipe(
-        id: json["id"],
-        image: json["image"],
-        name: json["name"],
-        proteins: json["proteins"],
-        calories: json["calories"],
-        servings: json["servings"],
-        description: json["description"],
+        json["id"],
+        json["image"],
+        json["name"],
+        json["description"],
+        json["proteins"],
+        json["calories"],
+        json["servings"],
         ingredients: json["ingredients"]
             .map<Ingredient>((i) => Ingredient.fromJSON(i))
             .toList(),
@@ -51,85 +51,25 @@ class Recipe extends Model {
       };
 
   Recipe copyWith({
-    String id,
-    String image,
-    String name,
-    String description,
-    int proteins,
-    int calories,
-    int servings,
-    List<Ingredient> ingredients,
-    List<Step> steps,
+    String? id,
+    String? image,
+    String? name,
+    String? description,
+    int? proteins,
+    int? calories,
+    int? servings,
+    List<Ingredient>? ingredients,
+    List<Step>? steps,
   }) =>
       Recipe(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        proteins: proteins ?? this.proteins,
-        calories: calories ?? this.calories,
-        servings: servings ?? this.servings,
-        description: description ?? this.description,
-        image: image ?? this.image,
+        id ?? this.id,
+        image ?? this.image,
+        name ?? this.name,
+        description ?? this.description,
+        proteins ?? this.proteins,
+        calories ?? this.calories,
+        servings ?? this.servings,
         ingredients: ingredients ?? this.ingredients,
         steps: steps ?? this.steps,
       );
 }
-
-final mockRecipe = Recipe(
-  id: "mock",
-  name: "Protein apple pie pancakes",
-  image: "images/food.png",
-  description:
-      "Four ingredients, delicious, quick and easy! You can also add cinamon to taste, a touch of lemon juice and a dash of ground ginger for even tastier results.",
-  ingredients: [
-    Ingredient(
-      id: "1",
-      name: "Unsweetned apple sauce",
-      quantity: "120",
-      unit: Unit.grams,
-    ),
-    Ingredient(
-      id: "2",
-      name: "Egg whites",
-      quantity: "1/3",
-      unit: Unit.cups,
-    ),
-    Ingredient(
-      id: "3",
-      name: "Flour",
-      quantity: "40",
-      unit: Unit.grams,
-    ),
-    Ingredient(
-      id: "4",
-      name: "Vanilla protein powder",
-      quantity: "30",
-      unit: Unit.grams,
-    ),
-  ],
-  steps: [
-    Step(id: "1", description: "pour all the wet ingredients in a bowl. "),
-    Step(id: "2", description: "Mix thoroughly."),
-    Step(id: "3", description: "Add the dry ingredients. "),
-    Step(id: "4", description: "Mix thoroughly."),
-    Step(
-        id: "5",
-        description:
-            "cook in batches for about 2-3 minutes each side. I like mine 3 to 4 inches in diameter. "),
-  ],
-);
-
-final mock = <Recipe>[
-  Recipe(
-    id: "mock1",
-    name: "Recipe 1",
-  ),
-  Recipe(
-    id: "mock2",
-    name: "Recipe 2",
-  ),
-  Recipe(
-    id: "mock3",
-    name: "Recipe 3",
-  ),
-  mockRecipe,
-];

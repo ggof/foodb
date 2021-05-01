@@ -7,7 +7,7 @@ class TabbedPage extends StatefulWidget {
   final List<WidgetFactory> pages;
   final List<BottomNavigationBarItem> items;
 
-  TabbedPage({this.pages, this.items})
+  TabbedPage(this.pages, this.items)
       : assert(pages.length == items.length),
         assert(pages.length > 1);
   @override

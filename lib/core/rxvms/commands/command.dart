@@ -1,13 +1,12 @@
 import 'dart:async';
 
 import 'package:foodb/core/rxvms/options/options.dart';
-import 'package:foodb/core/rxvms/options/success_option.dart';
 import 'package:meta/meta.dart';
 
 
 abstract class CommandPresenter {
-  void onLoading(LoadingOption option);
-  void onSuccess(SuccessOption option);
+  void onLoading(Option option);
+  void onSuccess(Option option);
   void onError(String error);
 }
 
@@ -16,5 +15,5 @@ abstract class CommandPresenter {
 /// If null is returned, then the state is not altered.
 @immutable
 abstract class Command<T> {
-  Future<T> call(T state);
+  Future<T?> call(T state);
 }

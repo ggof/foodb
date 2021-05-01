@@ -9,7 +9,7 @@ class ItemIngredient extends StatelessWidget {
   final VMIngredient vm;
   final void Function(VMIngredient) onDelete;
 
-  const ItemIngredient({Key key, this.vm, this.onDelete}) : super(key: key);
+  const ItemIngredient(this.vm, this.onDelete);
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class ItemIngredient extends StatelessWidget {
             Flexible(
               flex: 1,
               child: NotifiableTextBox(
-                listenable: vm.name,
+                vm.name,
                 onChanged: vm.setName,
                 hintText: "Ingredient",
               ),
@@ -44,7 +44,7 @@ class ItemIngredient extends StatelessWidget {
             Flexible(
               flex: 3,
               child: NotifiableTextBox(
-                listenable: vm.quantity,
+                vm.quantity,
                 onChanged: vm.setQuantity,
                 hintText: "Quantity",
                 keyboardType: TextInputType.number,
@@ -52,7 +52,7 @@ class ItemIngredient extends StatelessWidget {
             ),
             Flexible(
               flex: 2,
-              child: ValueListenableBuilder(
+              child: ValueListenableBuilder<Unit>(
                 valueListenable: vm.unit,
                 builder: (context, unit, _) => DropdownButton<Unit>(
                   value: unit,

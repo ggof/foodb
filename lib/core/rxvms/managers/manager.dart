@@ -11,8 +11,8 @@ abstract class Manager<T> {
   Future<void> execute(
     CommandPresenter presenter,
     Command<T> command, {
-    LoadingOption onLoading,
-    SuccessOption onSuccess,
+    Option onLoading,
+    Option onSuccess,
   });
 }
 
@@ -28,13 +28,13 @@ abstract class BaseManager<T> implements Manager<T> {
   Future<void> execute(
     CommandPresenter presenter,
     Command<T> command, {
-    SuccessOption onSuccess = const DoNothing(),
-    LoadingOption onLoading = const DoNothing(),
+    Option onSuccess = const Option.doNothing(),
+    Option onLoading = const Option.doNothing(),
   }) async {
     try {
       presenter.onLoading(onLoading);
 
-      final state = await command(_subject.value);
+      final state = await command(_subject.valueWrapper!.value);
       if (state != null) {
         _emit(state);
       }

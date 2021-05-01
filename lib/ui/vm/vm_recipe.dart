@@ -4,7 +4,6 @@ import 'package:foodb/core/entities/recipe.dart';
 import 'package:foodb/core/entities/step.dart';
 import 'package:foodb/core/rxvms/commands/command.dart';
 import 'package:foodb/core/rxvms/options/options.dart';
-import 'package:foodb/core/rxvms/options/success_option.dart';
 import 'package:foodb/core/rxvms/managers/manager.dart';
 import 'package:foodb/core/rxvms/managers/recipe_list_manager.dart';
 import 'package:foodb/router.dart';
@@ -31,14 +30,17 @@ class VMRecipe extends VM {
 
   final Manager<List<Recipe>> manager = locator();
 
-  void init(String id) {
-    if (id == null) return;
+  void init(String? id) {
+    if (id == null) {
+      setIdle();
+      return;
+    }
     _id = id;
     manager.execute(
       this,
       GetSingleCommand(id, onUpdate),
-      onLoading: SetLoading(),
-      onSuccess: StopLoading(),
+      onLoading: Option.startLoading(),
+      onSuccess: Option.stopLoading(),
     );
   }
 
@@ -51,8 +53,6 @@ class VMRecipe extends VM {
     image.value = TextValue(value: value.image);
     steps.value = value.steps.map((e) => VMStep(e)).toList();
     ingredients.value = value.ingredients.map((e) => VMIngredient(e)).toList();
-
-    setIdle();
   }
 
   void setName(String value) {
@@ -63,7 +63,9 @@ class VMRecipe extends VM {
   void setDesc(String value) => description.value = TextValue(value: value);
 
   void setCalories(String value) => _setInteger(calories, value);
+
   void setProteins(String value) => _setInteger(proteins, value);
+
   void setServings(String value) => _setInteger(servings, value);
 
   void _setInteger(ValueNotifier<TextValue> notifier, String value) {
@@ -79,24 +81,25 @@ class VMRecipe extends VM {
   }
 
   void addIngredient() => ingredients.add(VMIngredient(Ingredient()));
+
   void addStep() => steps.add(VMStep(Step()));
 
   void removeIngredient(VMIngredient value) => ingredients.remove(value);
+
   void removeStep(VMStep value) => steps.remove(value);
 
-  // TODO: Move all of this logic in separate Validators
-  // Also clean up this mess
+// TODO: Move all of this logic in separate Validators
   Future<void> submit() async {
     final value = Recipe(
-      id: id,
-      name: name.value.value,
-      description: description.value.value,
-      image: image.value.value,
-      ingredients: [for (final vm in ingredients.value) vm.value],
-      steps: [for (final vm in steps.value) vm.value],
-      calories: int.tryParse(calories.value.value),
-      proteins: int.tryParse(proteins.value.value),
-      servings: int.tryParse(servings.value.value),
+      id,
+      image.value.value,
+      name.value.value,
+      description.value.value,
+      int.tryParse(proteins.value.value) ?? 0,
+      int.tryParse(calories.value.value) ?? 0,
+      int.tryParse(servings.value.value) ?? 0,
+      ingredients: [for (final vm in ingredients.value) vm.value!],
+      steps: [for (final vm in steps.value) vm.value!],
     );
 
     bool errors = false;
@@ -105,29 +108,18 @@ class VMRecipe extends VM {
       errors = true;
     }
 
-    if (value.ingredients.isEmpty ||
-        value.steps.isEmpty ||
-        value.ingredients.any((e) => e == null) ||
-        value.steps.any((e) => e == null)) {
-      errors = true;
-    }
-
-    if (value.calories == null ||
-        value.proteins == null ||
-        value.servings == null) {
-      errors = true;
-    }
+    if (value.ingredients.isEmpty || value.steps.isEmpty) errors = true;
 
     if (errors) return;
 
     final Command<List<Recipe>> command =
-        id == null ? InsertCommand(value) : UpdateCommand(value);
+        id.isEmpty ? InsertCommand(value) : UpdateCommand(value);
 
     manager.execute(
       this,
       command,
-      onLoading: SetLoading(),
-      onSuccess: NavigateTo(NavigationEvent(routeRecipes)),
+      onLoading: Option.startLoading(),
+      onSuccess: Option.navigateTo(NavigationEvent(routeRecipes)),
     );
   }
 }

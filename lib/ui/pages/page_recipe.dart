@@ -4,6 +4,7 @@ import 'package:foodb/router.dart';
 import 'package:foodb/ui/components/vm_loader.dart';
 import 'package:foodb/ui/components/spacer.dart';
 import 'package:foodb/ui/helpers/text_value.dart';
+import 'package:foodb/ui/vm/vm.dart';
 import 'package:foodb/ui/vm/vm_ingredient.dart';
 import 'package:foodb/ui/vm/vm_recipe.dart';
 import 'package:foodb/ui/vm/vm_step.dart';
@@ -11,109 +12,117 @@ import 'package:foodb/ui/vm/vm_step.dart';
 class PageRecipe extends StatelessWidget {
   final String id;
 
-  const PageRecipe({Key key, this.id}) : super(key: key);
+  const PageRecipe(this.id);
 
   @override
   Widget build(BuildContext context) => VMLoader<VMRecipe>(
-        onVMReady: (vm) => vm.init(id),
-        builder: (context, vm) => Scaffold(
-          appBar: null,
-          body: CustomScrollView(
-            slivers: [
-              SliverPersistentHeader(
-                pinned: true,
-                delegate: _Header(id: id),
-              ),
-              SliverList(
-                delegate: SliverChildListDelegate(
-                  [
-                    Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).accentColor,
-                      ),
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 40),
+        (context, vm) => ValueListenableBuilder<ViewState>(
+          valueListenable: vm.state,
+          builder: (context, value, _) {
+            if (value is Busy) {
+              return Center(child: CircularProgressIndicator());
+            }
+
+           return Scaffold(
+            appBar: null,
+            body: CustomScrollView(
+              slivers: [
+                SliverPersistentHeader(
+                  pinned: true,
+                  delegate: _Header(id),
+                ),
+                SliverList(
+                  delegate: SliverChildListDelegate(
+                    [
+                      Container(
+                        width: double.infinity,
                         decoration: BoxDecoration(
-                          color: Theme.of(context).dialogBackgroundColor,
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(32),
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 40),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.surface,
+                            borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(32),
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              VerticalSpacer(40),
+                              ValueListenableBuilder<TextValue>(
+                                valueListenable: vm.name,
+                                builder: (context, value, _) => Text(value.value,
+                                    style: Theme.of(context).textTheme.headline1),
+                              ),
+                              VerticalSpacer(16),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  ValueListenableBuilder<TextValue>(
+                                    valueListenable: vm.calories,
+                                    builder: (context, value, _) => Text(
+                                      "Calories: ${value.value}",
+                                      style:
+                                          Theme.of(context).textTheme.headline3,
+                                    ),
+                                  ),
+                                  ValueListenableBuilder<TextValue>(
+                                    valueListenable: vm.proteins,
+                                    builder: (context, value, _) => Text(
+                                      "Protein: ${value.value} grams",
+                                      style:
+                                          Theme.of(context).textTheme.headline3,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              VerticalSpacer(16),
+                              ValueListenableBuilder<TextValue>(
+                                valueListenable: vm.description,
+                                builder: (context, value, _) => Text(
+                                  value.value,
+                                  style: Theme.of(context).textTheme.bodyText1,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              VerticalSpacer(64),
+                              Text('Ingredients',
+                                  style: Theme.of(context).textTheme.headline2),
+                              VerticalSpacer(16),
+                              Divider(color: Colors.grey.shade400),
+                              ValueListenableBuilder<List<VMIngredient>>(
+                                valueListenable: vm.ingredients,
+                                builder: (context, list, _) => Column(
+                                  children: list
+                                      .map(toIngredientItem(context))
+                                      .toList(),
+                                ),
+                              ),
+                              VerticalSpacer(32),
+                              Text('Steps',
+                                  style: Theme.of(context).textTheme.headline2),
+                              VerticalSpacer(16),
+                              Divider(color: Colors.grey.shade400),
+                              ValueListenableBuilder<List<VMStep>>(
+                                valueListenable: vm.steps,
+                                builder: (context, list, _) => Column(
+                                  children:
+                                      list.map(toStepItem(context)).toList(),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        child: Column(
-                          children: [
-                            VerticalSpacer(40),
-                            ValueListenableBuilder<TextValue>(
-                              valueListenable: vm.name,
-                              builder: (context, value, _) => Text(value.value,
-                                  style: Theme.of(context).textTheme.headline1),
-                            ),
-                            VerticalSpacer(16),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                ValueListenableBuilder<TextValue>(
-                                  valueListenable: vm.calories,
-                                  builder: (context, value, _) => Text(
-                                    "Calories: ${value.value}",
-                                    style:
-                                        Theme.of(context).textTheme.headline3,
-                                  ),
-                                ),
-                                ValueListenableBuilder<TextValue>(
-                                  valueListenable: vm.proteins,
-                                  builder: (context, value, _) => Text(
-                                    "Protein: ${value.value} grams",
-                                    style:
-                                        Theme.of(context).textTheme.headline3,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            VerticalSpacer(16),
-                            ValueListenableBuilder<TextValue>(
-                              valueListenable: vm.description,
-                              builder: (context, value, _) => Text(
-                                value.value ?? "No description provided",
-                                style: Theme.of(context).textTheme.bodyText1,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                            VerticalSpacer(64),
-                            Text('Ingredients',
-                                style: Theme.of(context).textTheme.headline2),
-                            VerticalSpacer(16),
-                            Divider(color: Colors.grey.shade400),
-                            ValueListenableBuilder<List<VMIngredient>>(
-                              valueListenable: vm.ingredients,
-                              builder: (context, list, _) => Column(
-                                children: list
-                                    .map(toIngredientItem(context))
-                                    .toList(),
-                              ),
-                            ),
-                            VerticalSpacer(32),
-                            Text('Steps',
-                                style: Theme.of(context).textTheme.headline2),
-                            VerticalSpacer(16),
-                            Divider(color: Colors.grey.shade400),
-                            ValueListenableBuilder<List<VMStep>>(
-                              valueListenable: vm.steps,
-                              builder: (context, list, _) => Column(
-                                children:
-                                    list.map(toStepItem(context)).toList(),
-                              ),
-                            ),
-                          ],
-                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          );},
         ),
+        onVMReady: (vm) => vm.init(id),
       );
 
   Widget Function(VMIngredient) toIngredientItem(BuildContext context) =>
@@ -156,7 +165,7 @@ class PageRecipe extends StatelessWidget {
 class _Header extends SliverPersistentHeaderDelegate {
   final String id;
 
-  _Header({this.id}) : super();
+  _Header(this.id) : super();
 
   @override
   Widget build(
@@ -173,7 +182,7 @@ class _Header extends SliverPersistentHeaderDelegate {
               tag: id,
               child: Container(
                 padding: EdgeInsets.only(top: 32),
-                color: Theme.of(context).accentColor,
+                color: Theme.of(context).colorScheme.secondary,
                 child: Image.asset("images/food.png", fit: BoxFit.contain),
               ),
             ),

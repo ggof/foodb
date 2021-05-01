@@ -14,10 +14,12 @@ class VMRecipeList extends VM {
     manager.subscribe(onUpdate);
   }
 
-  void init() {
-    manager.execute(this, GetAllCommand(),
-        onLoading: SetLoading(), onSuccess: StopLoading());
-  }
+  void init() => manager.execute(
+        this,
+        GetAllCommand(),
+        onLoading: const Option.startLoading(),
+        onSuccess: const Option.stopLoading(),
+      );
 
   void setFilter(String value) =>
       manager.execute(this, GetFilteredCommand(value, onUpdate));
@@ -25,15 +27,15 @@ class VMRecipeList extends VM {
   Future<void> refresh() => manager.execute(
         this,
         GetAllCommand(),
-        onLoading: DoNothing(),
-        onSuccess: StopLoading(),
+        onLoading: const Option.doNothing(),
+        onSuccess: const Option.stopLoading(),
       );
 
   void onUpdate(Iterable<Recipe> value) {
     list.value = value;
-
-    if (this.state.runtimeType != Idle) {
-      setIdle();
-    }
   }
+
+  Future<void> onDelete(Recipe value) async =>
+      manager.execute(this, DeleteCommand(value),
+          onLoading: Option.startLoading(), onSuccess: Option.stopLoading());
 }

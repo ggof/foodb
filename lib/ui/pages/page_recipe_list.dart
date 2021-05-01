@@ -10,8 +10,7 @@ import 'package:foodb/ui/vm/vm_recipe_list.dart';
 class PageRecipeList extends StatelessWidget {
   @override
   Widget build(BuildContext context) => VMLoader<VMRecipeList>(
-        onVMReady: (vm) => vm.init(),
-        builder: (context, vm) => Scaffold(
+        (context, vm) => Scaffold(
           floatingActionButton: FloatingActionButton(
             child: Icon(Icons.add),
             onPressed: () {
@@ -36,8 +35,7 @@ class PageRecipeList extends StatelessWidget {
                         ),
                         SliverAppBar(
                           automaticallyImplyLeading: false,
-                          backgroundColor:
-                              Theme.of(context).scaffoldBackgroundColor,
+                          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                           title: TextBox(
                             prefixIcon: Icon(Icons.search_rounded),
                             hintText: "Search something ...",
@@ -49,7 +47,7 @@ class PageRecipeList extends StatelessWidget {
                           valueListenable: vm.list,
                           builder: (context, list, _) => SliverList(
                             delegate: SliverChildListDelegate(
-                              list.map(toCard(context)).toList(),
+                              list.map(toCard(context, vm)).toList(),
                             ),
                           ),
                         ),
@@ -62,12 +60,36 @@ class PageRecipeList extends StatelessWidget {
                 }),
           ),
         ),
+        onVMReady: (vm) => vm.init(),
       );
 
-  Widget Function(Recipe) toCard(BuildContext context) =>
+  Widget Function(Recipe) toCard(BuildContext context, VMRecipeList vm) =>
       (Recipe t) => CardRecipe(
-            recipe: t,
+            t,
             onPressed: () => Navigator.of(context)
                 .pushNamed("/recipes/single", arguments: {"id": t.id}),
+            onLongPress: () async {
+              final shouldDelete = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text("Delete \"${t.name}\""),
+                  content: Text("Are you sure you want to delete this item?"),
+                  actions: [
+                    MaterialButton(
+                      child: Text("yes"),
+                      onPressed: () => Navigator.of(context).pop(true),
+                    ),
+                    MaterialButton(
+                      child: Text("no"),
+                      onPressed: () => Navigator.of(context).pop(false),
+                    ),
+                  ],
+                ),
+              );
+
+              if (shouldDelete ?? false) {
+                vm.onDelete(t);
+              }
+            },
           );
 }

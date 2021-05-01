@@ -24,7 +24,7 @@ class ListNotifier<T> with ChangeNotifier implements ValueListenable<List<T>> {
   }
 
   void replaceWhere(T item, bool Function(T item) predicate) {
-    _value = _value.map((i) => predicate(i) ? item : i);
+    _value = _value.map((i) => predicate(i) ? item : i).toList();
     notifyListeners();
   }
 }

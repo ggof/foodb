@@ -15,7 +15,7 @@ class VMStep extends VM {
     description.value = TextValue(value: value, error: error);
   }
 
-  Step get value => description.value.error.isNotEmpty
+  Step? get value => description.value.error.isNotEmpty
       ? null
       : Step(description: description.value.value);
 }

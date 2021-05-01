@@ -7,7 +7,7 @@ class TextValue {
     this.error = "",
   });
 
-  TextValue copyWith({String value, String error}) => TextValue(
+  TextValue copyWith({String? value, String? error}) => TextValue(
         value: value ?? this.value,
         error: error ?? this.error,
       );

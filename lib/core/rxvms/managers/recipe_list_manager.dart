@@ -12,7 +12,6 @@ class RecipeListManager extends BaseManager<List<Recipe>> {
       : super(initialState);
 }
 
-//TODO: move commands in separate file?
 class GetSingleCommand extends Command<List<Recipe>> {
   final String id;
   final UpdateCallback<Recipe> onValue;
@@ -20,16 +19,15 @@ class GetSingleCommand extends Command<List<Recipe>> {
   GetSingleCommand(this.id, this.onValue);
 
   @override
-  Future<List<Recipe>> call(List<Recipe> state) async {
-    final value = state.firstWhere((element) => element.id == id);
+  Future<List<Recipe>?> call(List<Recipe> state) async {
+    try {
+      final value = state.firstWhere((element) => element.id == id);
+      onValue(value);
 
-    if (value == null) {
+      return null;
+    } on StateError {
       throw NotFoundError("Recipe with id $id was not found");
     }
-
-    onValue(value);
-
-    return null;
   }
 }
 
@@ -37,20 +35,17 @@ class GetAllCommand extends Command<List<Recipe>> {
   final RecipeService service = locator();
 
   @override
-  Future<List<Recipe>> call(List<Recipe> state) async {
-    final newState = await service.getAll();
-
-    return newState;
-  }
+  Future<List<Recipe>?> call(List<Recipe> state) async => service.getAll();
 }
 
 class GetFilteredCommand extends Command<List<Recipe>> {
   final UpdateCallback<Iterable<Recipe>> onFiltered;
   final String filter;
+
   GetFilteredCommand(this.filter, this.onFiltered);
 
   @override
-  Future<List<Recipe>> call(List<Recipe> state) {
+  Future<List<Recipe>?> call(List<Recipe> state) async {
     onFiltered(state
         .where((e) => e.name.toLowerCase().contains(filter.toLowerCase())));
     return null;
@@ -61,6 +56,7 @@ class InsertCommand extends Command<List<Recipe>> {
   final RecipeService service = locator();
 
   final Recipe value;
+
   InsertCommand(this.value);
 
   @override
@@ -75,12 +71,27 @@ class UpdateCommand extends Command<List<Recipe>> {
   final RecipeService service = locator();
 
   final Recipe value;
+
   UpdateCommand(this.value);
 
   @override
   // Remove old value, add new one. Order is not preserved...
   Future<List<Recipe>> call(List<Recipe> state) async {
     final newState = [...state.where((e) => e.id != value.id), value].toList();
+    await service.update(newState);
+    return newState;
+  }
+}
+
+class DeleteCommand extends Command<List<Recipe>> {
+  final RecipeService service = locator();
+  final Recipe value;
+
+  DeleteCommand(this.value);
+
+  @override
+  Future<List<Recipe>?> call(List<Recipe> state) async {
+    final newState = state.where((e) => e.id != value.id).toList();
     await service.update(newState);
     return newState;
   }

@@ -3,7 +3,7 @@ import 'model.dart';
 class Step extends Model {
   final String description;
 
-  Step({String id, this.description}) : super(id: id);
+  Step({String id = "", this.description = ""}) : super(id);
 
   factory Step.fromJSON(Map<String, dynamic> json) => Step(
         id: json["id"],

@@ -24,7 +24,7 @@ Future<void> _setupServices() async {
 
 void _setupManagers() {
   locator.registerLazySingleton<Manager<List<Recipe>>>(
-    () => RecipeListManager(mock),
+    () => RecipeListManager(),
   );
 }
 
